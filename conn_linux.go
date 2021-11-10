@@ -3,6 +3,7 @@
 package vsock
 
 import (
+	"fmt"
 	"golang.org/x/sys/unix"
 )
 
@@ -32,6 +33,21 @@ func dial(cid, port uint32) (*Conn, error) {
 	return dialLinux(cfd, cid, port)
 }
 
+func getLocalContextID() (uint32, error) {
+	fd, err := unix.Open("/dev/vsock", 0660, unix.O_RDONLY)
+	if err != nil {
+		return 0, fmt.Errorf("open vsock: %w", err)
+	}
+	defer unix.Close(fd)
+
+	res, err := unix.IoctlGetInt(fd, unix.IOCTL_VM_SOCKETS_GET_LOCAL_CID)
+	if err != nil {
+		return 0, fmt.Errorf("ioctl get: %w", err)
+	}
+
+	return uint32(res), nil
+}
+
 // dialLinux is the entry point for tests on Linux.
 func dialLinux(cfd connFD, cid, port uint32) (c *Conn, err error) {
 	defer func() {
@@ -42,6 +58,20 @@ func dialLinux(cfd connFD, cid, port uint32) (c *Conn, err error) {
 		}
 	}()
 
+	lcid, err := getLocalContextID()
+	if err != nil {
+		return nil, err
+	}
+
+	lsa := &unix.SockaddrVM{
+		CID:  lcid,
+		Port: 0x03ff,
+	}
+
+	if err := cfd.Bind(lsa); err != nil {
+		return nil, err
+	}
+
 	rsa := &unix.SockaddrVM{
 		CID:  cid,
 		Port: port,
@@ -51,16 +81,9 @@ func dialLinux(cfd connFD, cid, port uint32) (c *Conn, err error) {
 		return nil, err
 	}
 
-	lsa, err := cfd.Getsockname()
-	if err != nil {
-		return nil, err
-	}
-
-	lsavm := lsa.(*unix.SockaddrVM)
-
 	local := &Addr{
-		ContextID: lsavm.CID,
-		Port:      lsavm.Port,
+		ContextID: lsa.CID,
+		Port:      lsa.Port,
 	}
 
 	remote := &Addr{

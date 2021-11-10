@@ -99,6 +99,7 @@ type connFD interface {
 	io.ReadWriteCloser
 	EarlyClose() error
 	Connect(sa unix.Sockaddr) error
+	Bind(sa unix.Sockaddr) error
 	Getsockname() (unix.Sockaddr, error)
 	Shutdown(how int) error
 	SetNonblocking(name string) error
@@ -144,6 +145,10 @@ func (cfd *sysConnFD) Connect(sa unix.Sockaddr) error {
 	}
 
 	return err
+}
+
+func (cfd *sysConnFD) Bind(sa unix.Sockaddr) error {
+	return unix.Bind(cfd.fd, sa)
 }
 
 // EarlyClose is a blocking version of Close, only used for cleanup before
