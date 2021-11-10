@@ -1,4 +1,4 @@
-module github.com/mdlayher/vsock
+module github.com/ptrcnull/vsock
 
 go 1.13
 

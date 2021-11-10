@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mdlayher/vsock"
+	"github.com/ptrcnull/vsock"
 )
 
 // Accept blocks until a single connection is accepted by the net.Listener.

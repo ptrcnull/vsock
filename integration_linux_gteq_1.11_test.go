@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mdlayher/vsock/internal/vsutil"
+	"github.com/ptrcnull/vsock/internal/vsutil"
 )
 
 func TestIntegrationListenerUnblockAcceptAfterClose(t *testing.T) {

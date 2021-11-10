@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/mdlayher/vsock"
-	"github.com/mdlayher/vsock/internal/vsutil"
+	"github.com/ptrcnull/vsock"
+	"github.com/ptrcnull/vsock/internal/vsutil"
 	"golang.org/x/sys/unix"
 )
 

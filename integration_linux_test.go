@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mdlayher/vsock"
-	"github.com/mdlayher/vsock/internal/vsutil"
+	"github.com/ptrcnull/vsock"
+	"github.com/ptrcnull/vsock/internal/vsutil"
 	"golang.org/x/net/nettest"
 )
 
